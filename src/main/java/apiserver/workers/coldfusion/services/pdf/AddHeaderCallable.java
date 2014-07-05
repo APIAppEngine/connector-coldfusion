@@ -5,6 +5,7 @@ import apiserver.workers.coldfusion.exceptions.ColdFusionException;
 import apiserver.workers.coldfusion.model.ByteArrayResult;
 import apiserver.workers.coldfusion.model.Stats;
 import coldfusion.cfc.CFCProxy;
+import org.apache.commons.codec.binary.Base64;
 import org.gridgain.grid.lang.GridCallable;
 
 import java.util.Map;
@@ -32,16 +33,20 @@ public class AddHeaderCallable implements GridCallable
             long startTime = System.nanoTime();
             System.out.println("Invoking Grid Service: api-pdf.cfc::addHeader ");
 
+            // covert file to base64 for transfer
+            String base64File = Base64.encodeBase64String(this.file);
+
             // Invoke CFC
             CFCProxy proxy = new CFCProxy(cfcPath, false);
-            byte[] result = (byte[])proxy.invoke("addHeader", new Object[]{this.file, this.options});
+            String result = (String)proxy.invoke("addHeader", new Object[]{base64File, this.options});
 
             // return the raw bytes of the pdf
             long endTime = System.nanoTime();
             Stats stats = new Stats();
             stats.setExecutionTime(endTime-startTime);
 
-            return new ByteArrayResult(stats, result);
+            byte[] resultBytes = Base64.decodeBase64(result);
+            return new ByteArrayResult(stats, resultBytes);
         }
         catch (Throwable e) {
             //e.printStackTrace();

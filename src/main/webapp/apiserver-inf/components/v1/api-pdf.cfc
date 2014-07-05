@@ -26,30 +26,106 @@
         <cfargument name="file">
         <cfargument name="options">
 
-        <cfpdf
-                action="addFooter"
-                name="pdfResult"
-                source="#file#"
-                attributeCollection="#options#">
+        <cfscript>
+            var images = arrayNew(1);
+            var tmpDir = GetTempDirectory();
+            var tmpDir = "#tmpDir##createUUID()#";
+            var tmpFile = "";//init
 
-        <cfreturn pdfResult>
+// create tmp dir.
+            directoryCreate(tmpDir);
+
+            var tmpFile = GetTempFile(tmpDir, "#createUUID()#.pdf");
+
+            if( not isDefined("options")){
+                options = structNew();
+            }
+
+
+        </cfscript>
+
+
+        <cfset _options = transformMapToStruct(options)>
+
+        <cftry>
+            <cfif isBase64(file)>
+                <cffile action="write" file="#tmpFile#" output="#BinaryDecode(file, "Base64")#"/>
+                <cfelse>
+                <cfset tmpFile = file>
+            </cfif>
+
+
+            <cfpdf
+                    action="addFooter"
+                    name="pdfResult"
+                    source="#tmpFile#"
+                    attributeCollection="#_options#">
+
+<!--- Display results --->
+<!---cfcontent type="application/pdf" variable="#ToBinary(pdfResult)#" /--->
+            <cfreturn BinaryEncode(toBinary(pdfResult), "Base64")>
+
+            <cffinally>
+                <cfif directoryExists(tmpDir)>
+                    <cfset directoryDelete(tmpDir, true)>
+                </cfif>
+            </cffinally>
+        </cftry>
     </cffunction>
 
 
 <!---
     Add Header
 --->
-    <cffunction name="addHeader">
+    <cffunction name="addHeader" access="remote" >
         <cfargument name="file">
         <cfargument name="options">
 
-        <cfpdf
-                action="addHeader"
-                name="pdfResult"
-                source="#file#"
-                attributeCollection="#options#">
+        <cfscript>
+            var images = arrayNew(1);
+            var tmpDir = GetTempDirectory();
+            var tmpDir = "#tmpDir##createUUID()#";
+            var tmpFile = "";//init
 
-        <cfreturn pdfResult>
+// create tmp dir.
+            directoryCreate(tmpDir);
+
+            var tmpFile = GetTempFile(tmpDir, "#createUUID()#.pdf");
+
+            if( not isDefined("options")){
+                options = structNew();
+            }
+
+
+        </cfscript>
+
+
+        <cfset _options = transformMapToStruct(options)>
+
+        <cftry>
+            <cfif isBase64(file)>
+                <cffile action="write" file="#tmpFile#" output="#BinaryDecode(file, "Base64")#"/>
+            <cfelse>
+                <cfset tmpFile = file>
+            </cfif>
+
+
+            <cfpdf
+                    action="addHeader"
+                    name="pdfResult"
+                    source="#tmpFile#"
+                    attributeCollection="#_options#">
+
+            <!--- Display results --->
+            <!---cfcontent type="application/pdf" variable="#ToBinary(pdfResult)#" /--->
+            <cfreturn BinaryEncode(toBinary(pdfResult), "Base64")>
+
+            <cffinally>
+                <cfif directoryExists(tmpDir)>
+                    <cfset directoryDelete(tmpDir, true)>
+                </cfif>
+            </cffinally>
+        </cftry>
     </cffunction>
 
 
@@ -127,7 +203,6 @@
                     source="#tmpFile#"
                     attributeCollection="#_options#">
 
-            <cfdump var="#pdfResult#" output="console"/>
             <cfreturn pdfResult>
 
             <cffinally>

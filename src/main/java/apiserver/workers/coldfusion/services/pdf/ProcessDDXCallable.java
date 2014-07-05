@@ -5,6 +5,7 @@ import apiserver.workers.coldfusion.exceptions.ColdFusionException;
 import apiserver.workers.coldfusion.model.ByteArrayResult;
 import apiserver.workers.coldfusion.model.Stats;
 import coldfusion.cfc.CFCProxy;
+import org.apache.commons.codec.binary.Base64;
 import org.gridgain.grid.lang.GridCallable;
 
 import java.util.Map;
@@ -32,9 +33,12 @@ public class ProcessDDXCallable implements GridCallable
             long startTime = System.nanoTime();
             System.out.println("Invoking Grid Service: api-pdf.cfc::processDDX ");
 
+            // covert file to base64 for transfer
+            String base64File = Base64.encodeBase64String(this.file);
+
             // Invoke CFC
             CFCProxy proxy = new CFCProxy(cfcPath, false);
-            byte[] result = (byte[])proxy.invoke("processDDX", new Object[]{this.file, this.ddx});
+            byte[] result = (byte[])proxy.invoke("processDDX", new Object[]{base64File, this.ddx});
 
             // return the raw bytes of the pdf
             long endTime = System.nanoTime();
