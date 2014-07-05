@@ -22,7 +22,7 @@
 <!---
     Add footer
 --->
-    <cffunction name="addFooter">
+    <cffunction name="addFooter"  access="remote">
         <cfargument name="file">
         <cfargument name="options">
 
@@ -47,6 +47,10 @@
 
         <cfset _options = transformMapToStruct(options)>
 
+        <cfif not isDefined("_options.text") and not isdefined("_options.image")>
+            <cfthrow message="Missing Footer Text or Image"/>
+        </cfif>
+
         <cftry>
             <cfif isBase64(file)>
                 <cffile action="write" file="#tmpFile#" output="#BinaryDecode(file, "Base64")#"/>
@@ -54,12 +58,29 @@
                 <cfset tmpFile = file>
             </cfif>
 
-
             <cfpdf
                     action="addFooter"
                     name="pdfResult"
                     source="#tmpFile#"
                     attributeCollection="#_options#">
+
+            <!---
+            <cfif isDefined("_options.text")>
+                <cfpdf
+                        action="addFooter"
+                        name="pdfResult"
+                        source="#tmpFile#"
+                        text="#_options.text#"
+                        attributeCollection="#_options#">
+            <cfelse>
+                <cfpdf
+                        action="addFooter"
+                        name="pdfResult"
+                        source="#tmpFile#"
+                        image="#_options.image#"
+                        attributeCollection="#_options#">
+            </cfif>
+            --->
 
 <!--- Display results --->
 <!---cfcontent type="application/pdf" variable="#ToBinary(pdfResult)#" /--->
