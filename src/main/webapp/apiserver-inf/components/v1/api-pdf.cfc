@@ -64,23 +64,6 @@
                     source="#tmpFile#"
                     attributeCollection="#_options#">
 
-            <!---
-            <cfif isDefined("_options.text")>
-                <cfpdf
-                        action="addFooter"
-                        name="pdfResult"
-                        source="#tmpFile#"
-                        text="#_options.text#"
-                        attributeCollection="#_options#">
-            <cfelse>
-                <cfpdf
-                        action="addFooter"
-                        name="pdfResult"
-                        source="#tmpFile#"
-                        image="#_options.image#"
-                        attributeCollection="#_options#">
-            </cfif>
-            --->
 
 <!--- Display results --->
 <!---cfcontent type="application/pdf" variable="#ToBinary(pdfResult)#" /--->
@@ -302,17 +285,43 @@
 <!---
     Retrieve information about a PDF document
 --->
-    <cffunction name= 'getInfo'>
+    <cffunction name= 'getInfo' access="remote">
         <cfargument name="file">
         <cfargument name="options">
 
-        <cfpdf
-                action="getinfo"
-                name="pdfResult"
-                source="#file#"
-                attributeCollection="#options#">
+        <cfscript>
+            var images = arrayNew(1);
+            var tmpDir = GetTempDirectory();
+            var tmpDir = "#tmpDir##createUUID()#";
 
-        <cfreturn pdfResult>
+            // create tmp dir.
+            directoryCreate(tmpDir);
+
+            var tmpFile = GetTempFile(tmpDir, "#createUUID()#.pdf");
+        </cfscript>
+
+        <cftry>
+            <cfif isBase64(file)>
+                <cffile action="write" file="#tmpFile#" output="#BinaryDecode(file, "Base64")#"/>
+                <cfelse>
+                <cfset tmpFile = file>
+            </cfif>
+
+
+            <cfpdf
+                    action="getinfo"
+                    name="pdfResult"
+                    source="#tmpFile#">
+
+            <cfreturn pdfResult>
+
+            <cffinally>
+                <cfif directoryExists(tmpDir)>
+                    <cfset directoryDelete(tmpDir, true)>
+                </cfif>
+            </cffinally>
+        </cftry>
+
     </cffunction>
 
 
@@ -369,17 +378,70 @@
 <!---
     Use DDX instructions to manipulate PDF documents
 --->
-    <cffunction name= 'processDDX'>
+    <cffunction name= 'processDDX' access="remote">
         <cfargument name="file">
         <cfargument name="ddx">
 
-        <cfpdf
-                action="processddx"
-                name="pdfResult"
-                source="#file#"
-                attributeCollection="#options#">
+        <cfscript>
+            var images = arrayNew(1);
+            var tmpDir = GetTempDirectory();
+            var tmpDir = "#tmpDir##createUUID()#";
+            var tmpFile = "";//init
 
-        <cfreturn pdfResult>
+// create tmp dir.
+            directoryCreate(tmpDir);
+
+            tmpFile = GetTempFile(tmpDir, "#createUUID()#.pdf");
+
+            var inputStruct=StructNew();
+            inputStruct.Doc1 = tmpFile;
+
+            var outputStruct=StructNew();
+            outputStruct.Out1="#tmpDir#/output.pdf";
+
+        </cfscript>
+
+
+        <cftry>
+            <cfif isBase64(file)>
+                <cffile action="write" file="#tmpFile#" output="#BinaryDecode(file, "Base64")#"/>
+                <cfelse>
+                <cffile action="write" file="#tmpFile#" output="#file#"/>
+            </cfif>
+
+            <cfpdf
+                    action="processddx"
+                    name="pdfResult"
+                    inputfiles="#inputStruct#"
+                    outputfiles="#outputStruct#"
+                    ddxfile="#ddx#">
+
+            <cfset result = ArrayNew(1)>
+            <cfdirectory name="fileList" action="list" directory="#tmpDir#" filter="output.pdf">
+            <cfloop item="item" collection="#outputStruct#">
+                <cfscript>
+                    file = fileReadBinary("#outputStruct[item]#");
+                    fileStruct = structNew();
+                    fileStruct.name = name;
+                    fileStruct.file = BinaryEncode(file, "Base64");
+                    arrayAppend(result, fileStruct);
+//fileDelete("#directory#/#name#");
+                </cfscript>
+            </cfloop>
+            <cfdump var="#result#" output="console" abort="true"/>
+            <cfreturn result>
+
+
+            <cfcatch type="any">
+                <cfdump var="#cfcatch#" output="console">
+            </cfcatch>
+            <cffinally>
+                <cfif directoryExists(tmpDir)>
+                    <cfset directoryDelete(tmpDir, true)>
+                </cfif>
+            </cffinally>
+        </cftry>
+
     </cffunction>
 
 
@@ -449,17 +511,48 @@
 <!---
     Set information about a PDF document
 --->
-    <cffunction name= 'setPdfInfo'>
+    <cffunction name= 'setPdfInfo' access="remote">
         <cfargument name="file">
         <cfargument name="options">
 
-        <cfpdf
-                action="setinfo"
-                name="pdfResult"
-                source="#file#"
-                attributeCollection="#options#">
 
-        <cfreturn pdfResult>
+        <cfscript>
+            var images = arrayNew(1);
+            var tmpDir = GetTempDirectory();
+            var tmpDir = "#tmpDir##createUUID()#";
+
+            // create tmp dir.
+            directoryCreate(tmpDir);
+
+            var tmpFile = GetTempFile(tmpDir, "#createUUID()#.pdf");
+        </cfscript>
+
+
+        <cftry>
+            <cfset _options = transformMapToStruct(options)>
+
+            <cfif isBase64(file)>
+                <cffile action="write" file="#tmpFile#" output="#BinaryDecode(file, "Base64")#"/>
+                <cfelse>
+                <cfset tmpFile = file>
+            </cfif>
+
+
+            <cfpdf
+                    action="setinfo"
+                    name="pdfResult"
+                    source="#tmpFile#"
+                    attributeCollection="#_options#">
+
+            <cfreturn pdfResult>
+
+            <cffinally>
+                <cfif directoryExists(tmpDir)>
+                    <cfset directoryDelete(tmpDir, true)>
+                </cfif>
+            </cffinally>
+        </cftry>
+
     </cffunction>
 
 

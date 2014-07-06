@@ -1,10 +1,9 @@
 package apiserver.workers.coldfusion.services;
 
-import apiserver.workers.coldfusion.GridManager;
+import apiserver.workers.coldfusion.ColdFusionWorkerServlet;
 import coldfusion.cfc.CFCProxy;
 
 import java.lang.reflect.Method;
-import java.net.URL;
 
 /**
  * Created by mnimer on 6/8/14.
@@ -13,7 +12,7 @@ public class TestService
 {
     public String execute(String msg)
     {
-        String cfcPath = GridManager.rootPath +"/apiserver-inf/components/v1/api-test.cfc";
+        String cfcPath = ColdFusionWorkerServlet.rootPath +"/apiserver-inf/components/v1/api-test.cfc";
         try
         {
             CFCProxy proxy = new CFCProxy(cfcPath, false);

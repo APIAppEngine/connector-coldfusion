@@ -3,13 +3,10 @@ package apiserver.workers.coldfusion;
 import org.gridgain.grid.Grid;
 import org.gridgain.grid.GridConfiguration;
 import org.gridgain.grid.GridGain;
-import org.gridgain.grid.marshaller.optimized.GridOptimizedMarshallable;
 import org.gridgain.grid.marshaller.optimized.GridOptimizedMarshaller;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -20,7 +17,7 @@ import java.util.Map;
 /**
  * Created by mnimer on 6/8/14.
  */
-public class GridManager implements Servlet
+public class ColdFusionWorkerServlet implements Servlet
 {
     private TaskRouter router = null;
     private Grid grid;

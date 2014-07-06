@@ -1,6 +1,6 @@
 package apiserver.workers.coldfusion.services.images;
 
-import apiserver.workers.coldfusion.GridManager;
+import apiserver.workers.coldfusion.ColdFusionWorkerServlet;
 import apiserver.workers.coldfusion.exceptions.ColdFusionException;
 import coldfusion.cfc.CFCProxy;
 import coldfusion.image.Image;
@@ -43,7 +43,7 @@ public class ImageTextCallable implements GridCallable
 
     @Override
     public byte[] call() throws Exception {
-        String cfcPath = GridManager.rootPath + "/apiserver-inf/components/v1/api-image.cfc";
+        String cfcPath = ColdFusionWorkerServlet.rootPath + "/apiserver-inf/components/v1/api-image.cfc";
 
         try {
             System.out.println("Invoking Grid Service: api-image.cfc?method=addText ");

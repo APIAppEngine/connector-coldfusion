@@ -1,6 +1,6 @@
 package apiserver.workers.coldfusion.services.pdf;
 
-import apiserver.workers.coldfusion.GridManager;
+import apiserver.workers.coldfusion.ColdFusionWorkerServlet;
 import apiserver.workers.coldfusion.exceptions.ColdFusionException;
 import apiserver.workers.coldfusion.model.ByteArrayResult;
 import apiserver.workers.coldfusion.model.Stats;
@@ -31,7 +31,7 @@ public class HtmlToPdfCallable implements GridCallable
 
     @Override
     public ByteArrayResult call() throws Exception {
-        String cfcPath = GridManager.rootPath + "/apiserver-inf/components/v1/api-pdf-convert.cfc";
+        String cfcPath = ColdFusionWorkerServlet.rootPath + "/apiserver-inf/components/v1/api-pdf-convert.cfc";
         try {
             long startTime = System.nanoTime();
             System.out.println("Invoking Grid Service: api-pdf-convert.cfc::htmlToPdf ");
