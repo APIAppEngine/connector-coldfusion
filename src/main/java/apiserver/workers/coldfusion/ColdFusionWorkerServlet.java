@@ -79,7 +79,7 @@ public class ColdFusionWorkerServlet implements Servlet
 
         GridConfiguration gc = new GridConfiguration();
         gc.setGridName("ApiServer");
-        gc.setPeerClassLoadingEnabled(true);
+        gc.setPeerClassLoadingEnabled(false);
         gc.setRestEnabled(false);
         gc.setUserAttributes(userAttr);
         gc.setMarshaller(marshaller);
