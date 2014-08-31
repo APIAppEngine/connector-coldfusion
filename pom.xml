@@ -3,11 +3,11 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.mikenimer.apiserver</groupId>
-    <artifactId>worker-coldfusion</artifactId>
+    <groupId>com.mikenimer.apiserver.connectors</groupId>
+    <artifactId>coldfusion</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>worker-coldfusion</name>
+    <name>ColdFusion Connector</name>
     <url>http://maven.apache.org</url>
 
     <dependencies>
@@ -101,7 +101,7 @@
     </dependencies>
 
     <build>
-        <finalName>worker-coldfusion-${project.version}</finalName>
+        <finalName>apiappengine-coldfusion-connector-${project.version}</finalName>
 
         <plugins>
             <plugin>
