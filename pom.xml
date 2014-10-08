@@ -3,11 +3,10 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.mikenimer.apiserver.connectors</groupId>
-    <artifactId>coldfusion</artifactId>
+    <groupId>com.mikenimer.apiappengine.connectors</groupId>
+    <artifactId>connector-coldfusion</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>ColdFusion Connector</name>
     <url>http://maven.apache.org</url>
 
     <dependencies>
@@ -22,8 +21,6 @@
             <scope>provided</scope>
         </dependency>
 
-
-
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
@@ -33,8 +30,8 @@
 
         <dependency>
             <groupId>org.gridgain</groupId>
-            <artifactId>gridgain-platform</artifactId>
-            <version>6.1.6</version>
+            <artifactId>gridgain-core</artifactId>
+            <version>6.5.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.eclipse.jetty</groupId>
@@ -58,6 +55,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <!--
         <dependency>
              <groupId>org.gridgain</groupId>
@@ -98,6 +96,12 @@
              </exclusions>
         </dependency>
          -->
+
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.9</version>
+        </dependency>
     </dependencies>
 
     <build>
