@@ -6,14 +6,14 @@ import apiserver.workers.coldfusion.model.ByteArrayResult;
 import apiserver.workers.coldfusion.model.Stats;
 import coldfusion.cfc.CFCProxy;
 import org.apache.commons.codec.binary.Base64;
-import org.gridgain.grid.lang.GridCallable;
+import org.apache.ignite.internal.util.lang.GridPlainCallable;
 
 import java.util.Map;
 
 /**
  * Created by mnimer on 6/10/14.
  */
-public class DeletePagesCallable implements GridCallable
+public class DeletePagesCallable implements GridPlainCallable
 {
 
     private byte[] file;
@@ -26,7 +26,6 @@ public class DeletePagesCallable implements GridCallable
     }
 
 
-    @Override
     public ByteArrayResult call() throws Exception {
         String cfcPath = ColdFusionWorkerServlet.rootPath + "/apiserver-inf/components/v1/api-pdf.cfc";
         try {

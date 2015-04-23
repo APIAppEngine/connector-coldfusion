@@ -4,12 +4,12 @@ import apiserver.workers.coldfusion.ColdFusionWorkerServlet;
 import apiserver.workers.coldfusion.exceptions.ColdFusionException;
 import coldfusion.cfc.CFCProxy;
 import coldfusion.image.Image;
-import org.gridgain.grid.lang.GridCallable;
+import org.apache.ignite.lang.IgniteCallable;
 
 /**
  * Created by mnimer on 6/10/14.
  */
-public class ImageBorderCallable implements GridCallable
+public class ImageBorderCallable implements IgniteCallable
 {
     private byte[] image;
     private String color;
@@ -35,8 +35,10 @@ public class ImageBorderCallable implements GridCallable
             CFCProxy proxy = new CFCProxy(cfcPath, false);
             Image result = (Image) proxy.invoke("addBorder", new Object[]{this.image, this.color, this.thickness});
 
+
             // Convert BuffereredImage back to regular image so we can return the bytes
-            return result.getImageBytes(this.format);
+            byte[] _img = result.getImageBytes(this.format);
+            return _img;
         }
         catch (Throwable e) {
             //e.printStackTrace();

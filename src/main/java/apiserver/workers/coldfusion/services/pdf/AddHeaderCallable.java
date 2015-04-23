@@ -6,14 +6,14 @@ import apiserver.workers.coldfusion.model.ByteArrayResult;
 import apiserver.workers.coldfusion.model.Stats;
 import coldfusion.cfc.CFCProxy;
 import org.apache.commons.codec.binary.Base64;
-import org.gridgain.grid.lang.GridCallable;
+import org.apache.ignite.internal.util.lang.GridPlainCallable;
 
 import java.util.Map;
 
 /**
  * Created by mnimer on 6/10/14.
  */
-public class AddHeaderCallable implements GridCallable
+public class AddHeaderCallable implements GridPlainCallable
 {
 
     private byte[] file;

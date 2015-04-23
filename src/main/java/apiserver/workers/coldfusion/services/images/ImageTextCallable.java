@@ -4,7 +4,7 @@ import apiserver.workers.coldfusion.ColdFusionWorkerServlet;
 import apiserver.workers.coldfusion.exceptions.ColdFusionException;
 import coldfusion.cfc.CFCProxy;
 import coldfusion.image.Image;
-import org.gridgain.grid.lang.GridCallable;
+import org.apache.ignite.lang.IgniteCallable;
 
 /**
  *
@@ -15,7 +15,7 @@ import org.gridgain.grid.lang.GridCallable;
  *
  * Created by mnimer on 6/10/14.
  */
-public class ImageTextCallable implements GridCallable
+public class ImageTextCallable implements IgniteCallable
 {
     private byte[] image;
     private String format;

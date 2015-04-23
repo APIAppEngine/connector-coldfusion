@@ -4,7 +4,8 @@ import apiserver.workers.coldfusion.ColdFusionWorkerServlet;
 import apiserver.workers.coldfusion.exceptions.ColdFusionException;
 import coldfusion.cfc.CFCProxy;
 import coldfusion.image.Image;
-import org.gridgain.grid.lang.GridCallable;
+import org.apache.ignite.internal.util.lang.GridPlainCallable;
+import org.apache.ignite.lang.IgniteCallable;
 
 /**
  *
@@ -15,7 +16,7 @@ import org.gridgain.grid.lang.GridCallable;
  *
  * Created by mnimer on 6/10/14.
  */
-public class ImageRotateCallable implements GridCallable
+public class ImageRotateCallable implements IgniteCallable
 {
     private byte[] image;
     private String format;
@@ -29,7 +30,6 @@ public class ImageRotateCallable implements GridCallable
     }
 
 
-    @Override
     public byte[] call() throws Exception {
 
         String cfcPath = ColdFusionWorkerServlet.rootPath + "/apiserver-inf/components/v1/api-image.cfc";

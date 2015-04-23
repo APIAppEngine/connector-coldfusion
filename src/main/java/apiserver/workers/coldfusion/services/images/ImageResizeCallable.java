@@ -4,12 +4,13 @@ import apiserver.workers.coldfusion.ColdFusionWorkerServlet;
 import apiserver.workers.coldfusion.exceptions.ColdFusionException;
 import coldfusion.cfc.CFCProxy;
 import coldfusion.image.Image;
-import org.gridgain.grid.lang.GridCallable;
+import org.apache.ignite.internal.util.lang.GridPlainCallable;
+import org.apache.ignite.lang.IgniteCallable;
 
 /**
  * Created by mnimer on 6/10/14.
  */
-public class ImageResizeCallable implements GridCallable
+public class ImageResizeCallable implements IgniteCallable
 {
     private byte[] image;
     private String format;

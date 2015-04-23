@@ -1,7 +1,7 @@
 package apiserver.workers.coldfusion;
 
 import apiserver.workers.coldfusion.services.TestService;
-import org.gridgain.grid.Grid;
+import org.apache.ignite.Ignite;
 
 import java.util.Date;
 
@@ -10,10 +10,10 @@ import java.util.Date;
  */
 public class TaskRouter implements Runnable
 {
-    Grid grid = null;
+    Ignite grid = null;
 
 
-    public TaskRouter(Grid grid) {
+    public TaskRouter(Ignite grid) {
         this.grid = grid;
     }
 
@@ -28,7 +28,7 @@ public class TaskRouter implements Runnable
 
         System.out.println("*** Start Executing TestService 1***" );
         long startTime = new Date().getTime();
-        new TestService().execute("hello world");
+        new TestService().execute("Checking Grid - " +grid.configuration().getNodeId());
         long endTime = new Date().getTime();
         System.out.println("*** END TestService (" +(endTime-startTime) +")***" );
 

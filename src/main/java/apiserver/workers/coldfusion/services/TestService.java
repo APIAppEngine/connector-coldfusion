@@ -17,7 +17,7 @@ public class TestService
         {
             CFCProxy proxy = new CFCProxy(cfcPath, false);
             String result = (String)proxy.invoke("echo", new Object[]{msg});
-            System.out.println("execute Result:" +result);
+            System.out.println("TestService Result:" +result);
             return result;
         }
         catch (Throwable e)
@@ -46,7 +46,7 @@ public class TestService
 
             System.out.println("found method");
 
-            Object[] cfcArgs = new Object[]{ "Hello World"};
+            Object[] cfcArgs = new Object[]{ "Testing Apache Ignite in ColdFusion!"};
             Object[] invokeArgs = new Object[]{ "echo", cfcArgs };
             String result = (String)echoMethod.invoke(cfcProxy, "echo", cfcArgs);
 

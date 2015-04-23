@@ -5,12 +5,12 @@ import apiserver.workers.coldfusion.exceptions.ColdFusionException;
 import apiserver.workers.coldfusion.model.ByteArrayResult;
 import apiserver.workers.coldfusion.model.Stats;
 import coldfusion.cfc.CFCProxy;
-import org.gridgain.grid.lang.GridCallable;
+import org.apache.ignite.internal.util.lang.GridPlainCallable;
 
 /**
  * Created by mnimer on 6/10/14.
  */
-public class PopulateFormFieldsCallable implements GridCallable
+public class PopulateFormFieldsCallable implements GridPlainCallable
 {
 
     private byte[] file;
