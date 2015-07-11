@@ -19,73 +19,129 @@
 
 <cfcomponent output="false">
 
-    <cffunction name="addBorder" output="no" access="remote" returnformat="plain">
-        <cfargument name="image"/>
-        <cfargument name="color" default="black"/>
-        <cfargument name="thickness" default="10"/>
+    <cffunction name="writeToStream" output="yes" access="remote" returnformat="plain">
+        <cfargument name="filePath"/>
+        <cfargument name="format"/>
 
-        <cfimage
-                action="border"
-                color="#arguments.color#"
-                thickness="#arguments.thickness#"
-                source="#ImageNew(image)#"
-                name="cfimage">
+        <cftry>
+            <cfscript>
+                _file = FileReadBinary(filePath);
 
+                context = getPageContext();
+                context.setFlushOutput(false);
+                response = context.getResponse().getResponse();
+                out = response.getOutputStream();
+                response.setContentType("image/#arguments.format#");
+                response.setContentLength(arrayLen(_file));
+                out.write(_file);
+                out.flush();
+                out.close();
+            </cfscript>
 
-        <cfreturn toBase64(cfimage)/>
+            <cfcatch type="any">
+                <cfdump var="#cfcatch#" output="console">
+                <cfrethrow>
+            </cfcatch>
+            <cffinally>
+                <cfscript>
+                    if (FileExists(dest)) {
+                        FileDelete(dest);
+                    }
+                </cfscript>
+            </cffinally>
+        </cftry>
     </cffunction>
 
 
+    <cffunction name="addBorder" output="yes" access="remote" returnFormat="plain">
+        <cfargument name="image"/>
+        <cfargument name="color" default="black"/>
+        <cfargument name="thickness" default="10"/>
+        <cfargument name="format" default="png"/>
 
-    <cffunction name="resizeImage" output="no" access="remote" returnformat="plain" >
+        <cfset dest = "ram:///#CreateUUID()#.#arguments.format#">
+
+        <cfimage
+                action="border"
+                quality="1"
+                color="#arguments.color#"
+                thickness="#arguments.thickness#"
+                source="#ImageNew(image)#"
+                destination="#dest#"
+                format="#format#">
+
+        <cfscript>
+            writeToStream(dest, format);
+        </cfscript>
+
+    </cffunction>
+
+
+    <cffunction name="resizeImage" output="yes" access="remote" returnformat="plain">
         <cfargument name="image"/>
         <cfargument name="width" default="1024"/>
         <cfargument name="height" default="768"/>
         <cfargument name="interpolation" default="bicubic"/>
         <cfargument name="scaleToFit" default="false"/>
+        <cfargument name="format" default="png"/>
+
+        <cfset dest = "ram:///#CreateUUID()#.#arguments.format#">
 
         <cfimage
                 action="resize"
+                quality="1"
                 width="#arguments.width#"
                 height="#arguments.height#"
                 interpolation="#arguments.interpolation#"
                 source="#ImageNew(arguments.image)#"
-                name="cfimage">
+                destination="#dest#"
+                format="#format#">
 
-        <cfreturn toBase64( cfimage ) />
+        <cfscript>
+            writeToStream(dest, format);
+        </cfscript>
     </cffunction>
 
 
-
-
-    <cffunction name="rotateImage" output="no" access="remote" returnformat="plain">
+    <cffunction name="rotateImage" output="yes" access="remote" returnformat="plain">
         <cfargument name="image"/>
         <cfargument name="angle" default="90"/>
+        <cfargument name="format" default="png"/>
+
+        <cfset dest = "ram:///#CreateUUID()#.#arguments.format#">
 
         <cfimage
                 action="rotate"
                 angle="#arguments.angle#"
-                source="#imageNew(arguments.image)#"
-                name="cfimage">
+                source="#ImageNew(arguments.image)#"
+                destination="#dest#"
+                format="#format#">
 
-        <cfreturn toBase64( cfimage )/>
+
+        <cfscript>
+            writeToStream(dest, format);
+        </cfscript>
+
     </cffunction>
 
 
-
-    <cffunction name="addText" access="remote" returntype="any" returnformat="plain">
+    <cffunction name="addText" output="yes" access="remote" returnFormat="plain">
         <cfargument name="image"/>
         <cfargument name="text"/>
         <cfargument name="color"/>
         <cfargument name="fontSize"/>
         <cfargument name="fontStyle"/>
         <cfargument name="angle" type="numeric"/>
-        <cfargument name="x" type="numeric" />
+        <cfargument name="x" type="numeric"/>
         <cfargument name="y" type="numeric"/>
+        <cfargument name="format" default="png"/>
 
         <CFIF arguments.angle gt 0>
             <cfthrow detail="Not Implemented Yet"/>
         </cfif>
+
+        <cfset fileName = "#CreateUUID()#.#arguments.format#">
+        <cfset dest = "ram:///#fileName#">
 
         <cfset myImage = ImageNew(arguments.image)>
 
@@ -94,20 +150,54 @@
         <cfset attr.size = val(arguments.fontSize) & "">
         <cfset attr.style = arguments.fontStyle>
         <cfset ImageDrawText(myImage, text, arguments.x, arguments.y, attr)>
+        <cfset ImageWrite(myImage, dest, true, 1)>
 
-        <cfreturn toBase64(myImage)/>
+        <cfscript>
+            writeToStream(dest, format);
+        </cfscript>
     </cffunction>
 
 <!---
 
 <cffunction name="imageMetadata" access="remote" returntype="any" returnformat="plain">
     <cfargument name="image"/>
-    <cfimage
+
+
+	<cfset dest="#GetTempDirectory()#/#CreateUUID()#.#arguments.format#">
+
+	<cftry>
+		<cfimage
             action="read"
             source="#arguments.image#"
-            name="cfimage">
+            destination="#dest#">
 
-    <cfreturn toBase64(cfimage)/>
+
+	    			<cfscript>
+						_file = FileReadBinary(dest);
+
+						context = getPageContext();
+						context.setFlushOutput(false);
+						response = context.getResponse().getResponse();
+						out = response.getOutputStream();
+						response.setContentType("image/#arguments.format#");
+						response.setContentLength(arrayLen(_file));
+						out.write(_file);
+						out.flush();
+						out.close();
+					</cfscript>
+
+				<cfcatch type="any">
+					<cfdump var="#cfcatch#" output="console">
+					<cfrethrow>
+				</cfcatch>
+				<cffinally>
+					<cfscript>
+						if( FileExists(dest) ){
+							FileDelete(dest);
+						}
+					</cfscript>
+				</cffinally>
+			</cftry>
 </cffunction>
 
 
@@ -123,7 +213,10 @@
     <cfargument name="fontSize" default="40"/>
     <cfargument name="fontFamily" default="Verdana,Arial,Courier New,Courier"/>
 
-    <cfimage
+	<cfset dest="#GetTempDirectory()#/#CreateUUID()#.#arguments.format#">
+
+	<cftry>
+    	<cfimage
             action="captcha"
             difficulty="#arguments.difficulty#"
             width="#arguments.width#"
@@ -131,9 +224,35 @@
             text="#arguments.text#"
             fontSize="#fontSize#"
             fonts="#fontFamily#"
-            name="cfimage">
+            destination="#dest#">
 
-    <cfreturn toBase64(cfimage)/>
+
+			<cfscript>
+				_file = FileReadBinary(dest);
+
+				context = getPageContext();
+				context.setFlushOutput(false);
+				response = context.getResponse().getResponse();
+				out = response.getOutputStream();
+				response.setContentType("image/#arguments.format#");
+				response.setContentLength(arrayLen(_file));
+				out.write(_file);
+				out.flush();
+				out.close();
+			</cfscript>
+
+		<cfcatch type="any">
+			<cfdump var="#cfcatch#" output="console">
+			<cfrethrow>
+		</cfcatch>
+		<cffinally>
+			<cfscript>
+				if( FileExists(dest) ){
+					FileDelete(dest);
+				}
+			</cfscript>
+		</cffinally>
+	</cftry>
 </cffunction>
 
 
