@@ -17,7 +17,7 @@
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~--->
 
-<cfcomponent output="false">
+<cfcomponent output="false"  extends="utils">
 
     <cffunction name="writeToStream" output="yes" access="remote" returnformat="plain">
         <cfargument name="filePath"/>
