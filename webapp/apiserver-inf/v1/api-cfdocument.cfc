@@ -1,7 +1,8 @@
-<cfcomponent extends="utils">
+<cfcomponent displayname="api-cfdocument" extends="utils">
 
-    <cffunction name="urlToPdf" access="remote" returntype="Binary">
-        <cfargument name="path" type="string">
+
+    <cffunction name="urlToPdf" output="yes" access="remote" returnformat="plain">
+        <cfargument name="url" type="string">
         <cfargument name="options" type="any" default="#structNew()#">
 
         <cfdump var="#options#" output="console"/>
@@ -12,31 +13,26 @@
             }
         </cfscript>
 
+
         <cfdocument
+                name="pdfResult"
                 format="pdf"
-                src="#path#" name="pdfResult"
                 attributeCollection="#options#"></cfdocument>
 
-        <cfreturn pdfResult/>
+        <cfcontent variable="#pdfResult#" type="application/pdf">
+
     </cffunction>
 
 
 
-    <cffunction name="htmlToPdf" >
-        <cfargument name="HTML" type="string">
-        <cfargument name="HEADERHTML" type="string" default="default header">
-        <cfargument name="FOOTERHTML" type="string" default="default footer">
-        <cfargument name="OPTIONS" type="STRUCT" default="#structNew()#">
-
-        <cfparam name="HEADERHTML" default="default header2"/>
-
-        <cfdump var="#arguments#" output="console">
+    <cffunction name="htmlToPdf" output="yes" access="remote" returnformat="plain">
+        <cfargument name="options" type="any" default="#structNew()#">
 
         <cfscript>
-            if( isJSON(arguments.options) )
-            {
-                arguments.options = DeserializeJSON(arguments.options);
-            }
+            this.headerHtml = "";
+            this.footerHtml = "";
+            jsonMap = DeserializeJSON(arguments.options);
+            arguments.options = jsonMap;
         </cfscript>
 
         <cfoutput>
@@ -44,15 +40,13 @@
                     name="pdfResult"
                     format="pdf"
                     attributeCollection="#arguments.options#">
-                <cfdocumentitem type="header">Header:<cfif isDefined("HEADERHTML")>#HEADERHTML#</cfif></cfdocumentitem>
-                #HTML#
+                <cfif isDefined("jsonMap.headerhtml")><cfdocumentitem type="header">#jsonMap.headerhtml#</cfdocumentitem></cfif>
+                #options.html#
+                <cfif isDefined("jsonMap.footerhtml")><cfdocumentitem type="footer">#jsonMap.footerhtml#</cfdocumentitem></cfif>
+            </cfdocument>
+        </cfoutput>
 
-                <cfdocumentitem type="footer" evalatprint="true">
-                    <cfoutput>#cfdocument.currentpagenumber# of #cfdocument.totalpagecount#</cfoutput>
-                </cfdocumentitem>
-            </cfdocument></cfoutput>
-
-        <cfreturn pdfResult/>
+        <cfcontent variable="#pdfResult#" type="application/pdf">
     </cffunction>
 
 
