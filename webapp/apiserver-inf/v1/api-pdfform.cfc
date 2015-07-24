@@ -19,52 +19,83 @@
 
 <cfcomponent>
 
-    <cffunction name="populateFormFields" access="remote" returntype="Any">
-        <cfargument name="file"/>
-        <cfargument name="fields" hint="xml packet of field name/values"/>
-        <cfargument name="password" required="false"/>
-
-        <cfset _options = structNew()>
-        <cfif isDefined("password") and len(password) gt 0>
-            <cfset _options["password"] = password>
-        </cfif>
 
 
-        <cfsavecontent variable="x1">
-            <?xml version="1.0" encoding="UTF-8"?><xfdf xmlns="http://ns.adobe.com/xfdf/" xml:space="preserve"><fields><field name="Check1"><value>Yes</value></field><field name="Email"><value>mike@foo.com</value></field><field name="FavoriteColor"><value>green</value><value>purple</value></field><field name="FirstName"><value>Mike</value></field><field name="LastName"><value>Nimer</value></field></fields><ids original="BEE1C4660EB520429C7654A7A02417CE" modified="2C87012FF28C4BF8AC0CA24ECF314DEB"></ids></xfdf>
-        </cfsavecontent>
-<!---
-       <cfsavecontent variable="x2">
-           <xfa:data xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/">
-               <form1>
-                   <Check1>Yes</Check1>
-                   <Email>mike@foo.com</Email>
-                   <FavoriteColor>green</FavoriteColor>
-                   <FirstName>Mike</FirstName>
-                   <LastName>Nimer</LastName>
-               </form1>
-           </xfa:data>
-       </cfsavecontent>
-       --->
-        <cfpdfform
-                action="populate"
-                source="#file#"
-                xmldata="#trim(x1)#">
-        </cfpdfform>
+    <cffunction name="extractFormFieldsAsXml" output="yes" access="remote" returntype="xml" returnformat="plain">
+        <cfargument name="file">
+        <cfargument name="options" type="any">
 
+        <cftry>
+            <!--- fdf XML --->
+            <cfpdfform
+                    action="read"
+                    source="#file#"
+                    XMLdata="xmlResult"/>
+
+            <cfreturn xmlResult/>
+
+            <cfcatch type="any">
+                <cfheader statuscode="400" statustext="#cfcatch.detail#"/>
+                <cfcontent type="application/json">
+                <cfreturn cfcatch/>
+            </cfcatch>
+        </cftry>
     </cffunction>
 
 
-    <cffunction name="extractFormFields" access="remote" returntype="struct">
+
+
+    <cffunction name="extractFormFieldsAsJson" output="yes" access="remote" returntype="string" returnformat="json">
         <cfargument name="file">
+        <cfargument name="options" type="any">
 
-        <cfpdfform
-                action="read"
-                source="#file#"
-                result="pdfResult"/>
+        <cftry>
+            <!--- json --->
+            <cfpdfform
+                    action="read"
+                    source="#file#"
+                    result="pdfResult"/>
 
-        <cfreturn pdfResult>
+            <cfreturn serializeJSON(pdfResult)/>
+
+            <cfcatch type="any">
+                <cfheader statuscode="400" statustext="#cfcatch.detail#"/>
+                <cfcontent type="application/json">
+                <cfreturn cfcatch/>
+            </cfcatch>
+        </cftry>
+    </cffunction>
+
+
+
+    <cffunction name="populateFormFields" access="remote" returntype="Any">
+        <cfargument name="file"/>
+        <cfargument name="options" required="true" type="any">
+
+        <cfdump var="#arguments#" output="console"/>
+        <cftry>
+            <cfset _options = DeserializeJSON(options) >
+            <cfset tmpOutputFile = "#getTempDirectory()#/#createUUID()#.pdf">
+
+
+            <cfpdfform
+                    action="populate"
+                    source="#file#"
+                    attributeCollection="#_options#"
+                    destination="#tmpOutputFile#">
+            </cfpdfform>
+
+            <cfcontent file="#tmpOutputFile#" type="application/pdf" deletefile="yes">
+
+            <cfcatch type="any">
+                <cfdump var="#cfcatch#" output="console"/>
+                <cfheader statuscode="400" statustext="#cfcatch.detail#"/>
+                <cfcontent type="application/json">
+                <cfreturn cfcatch/>
+            </cfcatch>
+        </cftry>
     </cffunction>
 
 
 </cfcomponent>
+

@@ -51,7 +51,6 @@
         <cfargument name="files" required="false" type="any">
         <cfargument name="options" required="true" type="any">
 
-<cfdump var="#arguments#" output="console"/>
 
         <cfset tmpOutputFile = "ram:///#createUUID()#.pdf">
         <cfset _options = DeserializeJSON(options) >
@@ -82,7 +81,6 @@
         <cfargument name="file" required="true" type="any">
         <cfargument name="options" required="true" type="any">
 
-<cfdump var="#arguments#" output="console"/>
 
         <cftry>
             <cfset _options = DeserializeJSON(options) >
@@ -122,8 +120,6 @@
         <cfargument name="file" required="true" type="any">
         <cfargument name="options" required="true" type="any">
 
-<cfdump var="#arguments#" output="console"/>
-
         <cfset tmpOutputFile = "ram:///#createUUID()#.pdf">
         <cfset _options = DeserializeJSON(options) >
 
@@ -145,8 +141,6 @@
         </cftry>
 
     </cffunction>
-
-
 
 
 </cfcomponent>
