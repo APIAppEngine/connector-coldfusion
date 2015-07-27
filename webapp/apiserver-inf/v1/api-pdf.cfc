@@ -1,5 +1,10 @@
 <cfcomponent extends="utils">
 
+    <!---
+        todo idea: add URL To jpg
+        @see http://www.raymondcamden.com/2007/06/13/ColdFusion-8-URL-Thumbnails
+    --->
+
 
     <cffunction name="executeForPdf" output="yes" access="remote" returnformat="plain">
         <cfargument name="action" required="true" type="any">
@@ -8,7 +13,8 @@
 
         <cfdump var="#arguments#" output="console"/>
 
-        <cfset tmpOutputFile = "ram:///#createUUID()#.pdf">
+
+        <cfset tmpOutputFile = "#getTempDirectory()#/#createUUID()#.pdf">
         <cfset _options = DeserializeJSON(options) >
 
         <cftry>
